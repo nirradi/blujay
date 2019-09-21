@@ -3,7 +3,7 @@ let createItem = (path, type, content) => {
     let newItem = {
         type: type,
         name: pathArr.pop(),
-        path: "/" + pathArr.join('/'),
+        path: pathArr.join('/') + "/",
     }
 
     if (type === 'file')
@@ -22,9 +22,9 @@ let getDirectoryContents = (fs, path) => {
 
 let createRoot = () => {
     return {
-        '/': {
+        '': {
             type: 'directory', 
-            name: '/',
+            name: '',
         }
     }
 }

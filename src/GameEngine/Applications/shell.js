@@ -18,8 +18,11 @@ export default prompt((cmd, args, state) =>  {
             return echo(names, state)
         case 'cd': 
             let dirName = normalize(state.cwd, args[0])
+            if (dirName[dirName.length -1] === "/")
+                dirName = dirName.slice(0, -1)
+
             if (state.fs[dirName])
-                return {...state, cwd: dirName}
+                return {...state, cwd: dirName + "/"}
             else
                 return echo ("bad directory", state)
 
@@ -40,7 +43,8 @@ export default prompt((cmd, args, state) =>  {
 
 let root = createRoot()
 root = addItem(root, '/README', 'file', 'this is the first file')
-
+root = addItem(root, '/subdir', 'directory')
+root = addItem(root, '/subdir/README', 'file', 'this is the second file')
 
 let initialState = {
     prompt: "shell>",
