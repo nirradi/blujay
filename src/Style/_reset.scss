@@ -1,0 +1,12 @@
+html, body, #__next, #__next>div, #__next>div>div {
+  height: 100%;
+}
+
+input {
+ border: none;
+ background: none;
+}
+
+input:focus {
+    outline:none;
+}
