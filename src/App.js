@@ -1,25 +1,24 @@
 import React, { Component } from 'react';
 import Terminal from './GameEngine/Framework/Terminal'
-import {initialState} from './GameEngine/Applications/shell'
 import applications from './GameEngine/Applications/applications'
-// import level0 from './Levels/level0'
+import {levelFnc, initialLevelState} from './Levels'
 import './Style/main.scss'
 class App extends Component {
 
     constructor() {
         super();
 
-        let gameState = {
-            currentApp: initialState,
+        this.state = {
+            currentApp: initialLevelState('level0'),
+            currentLevel: 'level0'
         }
-
-        this.state = gameState
       
         this.onEnter = this.onEnter.bind(this)
     }
 
     onEnter(cmd, args) {
         let newAppState = applications(this.state.currentApp.fnc)(cmd, args, this.state.currentApp)
+        newAppState = levelFnc(this.state.currentLevel)(newAppState)
         this.setState({
             currentApp: newAppState
         })

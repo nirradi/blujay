@@ -1,7 +1,7 @@
 //import email from './emailEmulator.js'
 import echo from './echo'
 import prompt from './prompt'
-import {createRoot, addItem, getContent, getDirectoryContents, normalize} from './fs'
+import {createRoot, getContent, normalize} from './fs'
 import {initialState as emailState} from './email'
 import {push as stackPush} from './stack'
 
@@ -47,9 +47,6 @@ export default prompt((cmd, args, state) =>  {
 
 
 let root = createRoot()
-root = addItem(root, '/README', 'file', 'this is the first file')
-root = addItem(root, '/subdir', 'directory')
-root = addItem(root, '/subdir/README', 'file', 'this is the second file')
 
 let initialState = {
     prompt: "shell>",
