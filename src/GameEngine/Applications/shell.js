@@ -2,6 +2,8 @@
 import echo from './echo'
 import prompt from './prompt'
 import {createRoot, addItem, getContent, getDirectoryContents, normalize} from './fs'
+import {initialState as emailState} from './email'
+import {push as stackPush} from './stack'
 
 Object.filter = (obj, predicate) => 
     Object.keys(obj)
@@ -35,7 +37,10 @@ export default prompt((cmd, args, state) =>  {
                 return echo(content, state)
         case "":
             return state
-            
+        
+        case "email": 
+            return stackPush(state, "email")
+
         default: return echo("bad command", state)
     }
 })
@@ -50,9 +55,11 @@ let initialState = {
     prompt: "shell>",
     output: [],
     fnc: 'shell',
-    availableCommands: ['help', 'ls', 'cat'],
+    availableCommands: ['help', 'ls', 'cat', 'email'],
     fs: root,
-    cwd: '/'
+    cwd: '/',
+    emailState: emailState,
+    stack: []
 }
 
 export {initialState}

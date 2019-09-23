@@ -10,13 +10,9 @@ class App extends Component {
         super();
 
         let gameState = {
-            shell: initialState,
-            inbox: [
-                { subject: "do no reply", content: "this is the content" }
-            ],
+            currentApp: initialState,
         }
 
-        gameState.currentApp = gameState.shell
         this.state = gameState
       
         this.onEnter = this.onEnter.bind(this)
