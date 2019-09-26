@@ -2,7 +2,8 @@ import echo, {prettify} from './echo'
 import prompt from './prompt'
 import {push as stackPush, pop as stackPop} from './stack'
 import {initialState as emailEditorState} from './emailEditor'
-
+import {now} from './shell'
+import moment from 'moment'
 
 const markAsRead = (state, label, emails) => {
     let markedEmails = state.emails.map( (email) => {
@@ -44,12 +45,22 @@ let initialState = {
     availableCommands: ['help', 'show', 'send'],
     emails: [],
     emailEditorState,
-    onStartFnc: 'onEmailStart'
+    onStartFnc: 'onEmailStart',
+    config: {
+        encryptor: "v1.4",
+        server: "admantech vanilla 1",
+        clock: "from server"
+    },
 }
 
 export {initialState}
 
 export const addEmail = (currentState, email) => {
+    if (!email.sent) {
+        let sent = currentState.config.clock === "from server" ? moment().format() : now(currentState)
+        email = {...email, sent}
+    }
+        
     return {...currentState, emails: [...currentState.emails, email]}
     
 }

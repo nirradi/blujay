@@ -18,7 +18,7 @@ emailState = addEmail(emailState, {
     subject: 'hey where are you?',
     content: "You haven't been around the office, send me an email when you see this",
     labels: ['unread', 'inbox'],
-    sent: moment().startOf('day')
+    sent: moment().startOf('day').format()
 })  
 
 
@@ -46,7 +46,7 @@ let triggers = [
                     subject: 'so you went home.....',
                     content: "I'm glad to see you back reading emails. I can't really read what you wrote its all garbage, you haven't updated your email server yet, so your encryption engine is out dated. send me your NetLoc number and I'll fix it from here",
                     labels: ['unread', 'inbox'],
-                    sent: moment()
+                    sent: moment().format()
                 })
 
                 levelProgress = {
@@ -69,7 +69,7 @@ let triggers = [
                     subject: 'nice try',
                     content: "if you tried to send me the netloc #, then obviously you can't because the mail is still encrypted, so is the subject for that fact. That's going to be a problem!? I'll try to find your netloc# here somewhere while you try to figure out a way around the encryption.",
                     labels: ['unread', 'inbox'],
-                    sent: moment()
+                    sent: moment().format()
                 })
 
                 levelProgress = {
@@ -77,6 +77,37 @@ let triggers = [
                     sendSecondEmail: true,
                 }
             }
+        }
+                
+        return [gameState, levelProgress]
+    },
+
+    (gameState, levelProgress) => {
+        if (!levelProgress.emailUnencrypted && levelProgress.sentFirstEmail && gameState.fnc === 'email') {
+
+            let foundEmails = gameState.emails.filter( (email) => {
+                return (email.labels.includes('outbox') && email.to.toLowerCase() === ITfriend.toLowerCase() && email.sent === "1501 December 03, 13:34")
+            })
+
+            if (foundEmails.length > 0) {
+                gameState = addEmail({...gameState}, {
+                    from: ITfriend,
+                    to: 'me',
+                    subject: 'WOW I see what you did there!',
+                    content: "How did you think of that!? anyway, I got your email updated - and now we should be able to talk about... you won't believe what Richards (aka toilet-breaks) got away with today!",
+                    labels: ['unread', 'inbox'],
+                    sent: moment().format()
+                })
+
+                levelProgress = {
+                    ...levelProgress,
+                    emailUnencrypted: true,
+                }
+
+                alert("game over")
+            }
+
+            
         }
                 
         return [gameState, levelProgress]

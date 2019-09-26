@@ -4,12 +4,17 @@ import prompt from './prompt'
 import {createRoot, getContent, normalize} from './fs'
 import {initialState as emailState} from './email'
 import {push as stackPush} from './stack'
+import moment from 'moment'
+
+moment.defaultFormat = 'YYYY MMMM DD, H:mm'
 
 Object.filter = (obj, predicate) => 
     Object.keys(obj)
           .filter( key => predicate(obj[key]) )
           .reduce( (res, key) => (res[key] = obj[key], res), {} );
 
+
+let startTime = moment()
 
 export default prompt((cmd, args, state) =>  {
     switch (cmd) {
@@ -46,7 +51,7 @@ export default prompt((cmd, args, state) =>  {
                         case "network": 
                         return echo ( prettify(state.network, ['location', 'type', 'ping']), state )
                         case "email": 
-                            return echo ( prettify(state.mailing, ['encryptor', 'server', 'clock']), state )
+                            return echo ( prettify(state.emailState.config, ['encryptor', 'server', 'clock']), state )
                         default:
                         case "os":
                         case "":
@@ -58,8 +63,8 @@ export default prompt((cmd, args, state) =>  {
                         case "email": 
                             switch (args[2]) {
                                 case "clock": 
-                                    let newClock = state.mailing.clock === 'from server' ? 'from local' :  'from server' 
-                                    return echo ( "toggle clock ---> " + newClock, {...state, mailing: {...state.mailing, clock: newClock}  } )
+                                    let newClock = state.emailState.config.clock === 'from server' ? 'from local' :  'from server' 
+                                    return echo ( "toggle clock ---> " + newClock, {...state, emailState: {...state.emailState, config: {...state.emailState.config, clock: newClock} }  } )
                                 default:
                                 case "":
                                     return echo ( "bad paramater or update not possible", state )
@@ -76,6 +81,14 @@ export default prompt((cmd, args, state) =>  {
         
         case "email": 
             return stackPush(state, "email")
+
+        case "time": 
+            
+            if (typeof args[0] !== 'undefined' && args[0] !== "") 
+                return {...state, system: {...state.system, time: moment(args.join(" "), moment.defaultFormat)}}
+            else
+                return echo (now(state), state)
+            
 
         default: return echo("bad command", state)
     }
@@ -96,18 +109,19 @@ let initialState = {
     system: {
         os: "BluJay",
         version: "451.7.16",
-        build: "HappNapp--11"
+        build: "HappNapp--11",
+        time: startTime
     },
     network: {
         location: "150112031334",
         type: "havocnet",
         ping: "---"
     },
-    mailing: {
-        encryptor: "v1.4",
-        server: "admantech vanilla 1",
-        clock: "from server"
-    }
 }
 
 export {initialState}
+
+export const now = (state) => {
+    let system = state.stack && state.stack.length > 0 ? state.stack[0].system : state.system
+    return (system.time.add((moment().subtract(startTime)))).format();
+}
