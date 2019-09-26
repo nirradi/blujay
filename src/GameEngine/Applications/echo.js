@@ -5,3 +5,11 @@ export default (text, state) => {
     })
 }
 
+export const prettify = (obj, fields) => {
+    let result = ""
+    fields.forEach( (field) => {
+        result += `${field}: ${obj[field.toLowerCase()]}\n`
+    })
+
+    return result
+}

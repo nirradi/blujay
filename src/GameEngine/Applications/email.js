@@ -1,7 +1,23 @@
-import echo from './echo'
+import echo, {prettify} from './echo'
 import prompt from './prompt'
 import {push as stackPush, pop as stackPop} from './stack'
 import {initialState as emailEditorState} from './emailEditor'
+
+
+const markAsRead = (state, label, emails) => {
+    let markedEmails = state.emails.map( (email) => {
+        if (email.labels.includes(label) && email.labels.includes('unread'))
+            return {
+                ...email, 
+                labels: email.labels.filter( (label) => (label !== 'unread'))
+            }
+        else
+            return email
+    })
+
+    return {...state, emails: markedEmails}
+}
+
 
 export default prompt((cmd, args, state) =>  {
     switch (cmd) {
@@ -11,8 +27,9 @@ export default prompt((cmd, args, state) =>  {
         case 'show': 
             let label = args[0] || 'unread'
             let emails = state.emails.filter( (email) => ( email.labels.includes(label) ) )
-            let result = emails.map( (email) => ( JSON.stringify(email) ) ).reduce( (res, email) => (res + "\n" + email), "")
-            return echo (result, state)
+            let result = emails.map( (email) => ( prettify(email, ["To", "From", "Sent", "Subject", "Content"]) ) ).reduce( (res, email) => (res + email), "")
+            
+            return echo (result, markAsRead(state, label, emails) )
         case 'quit': 
             return stackPop(state, "email")
         default: 
@@ -51,4 +68,33 @@ export const onEmailStart = (state, args) => {
     
 }
 
+export const sendEmails = (state, emailWhiteList) => {
+    if (!state.emails)
+        return state
 
+    let updated = false
+
+    emailWhiteList = emailWhiteList.map( (email) => (email.toLowerCase()))
+    let newEmails = state.emails.map( (email) => {
+        if (email.labels.includes('outbox')) {
+            updated = true
+            if (emailWhiteList.includes(email.to.toLowerCase())) {
+                return {
+                    ...email, 
+                    labels: ['sent']
+                }
+            }
+            else {
+                return {
+                    ...email,
+                    labels: ['failed']
+                }
+            }
+        }
+        else {
+            return email
+        }
+    })
+
+    return updated ? {...state, emails: newEmails} : state
+}

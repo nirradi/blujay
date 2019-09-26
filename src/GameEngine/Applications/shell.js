@@ -1,5 +1,5 @@
 //import email from './emailEmulator.js'
-import echo from './echo'
+import echo, {prettify} from './echo'
 import prompt from './prompt'
 import {createRoot, getContent, normalize} from './fs'
 import {initialState as emailState} from './email'
@@ -37,6 +37,42 @@ export default prompt((cmd, args, state) =>  {
                 return echo(content, state)
         case "":
             return state
+
+        case "system": 
+            let cmd = args[0] || 'show'
+            switch (cmd) {
+                case "show": {
+                    switch (args[1]) {
+                        case "network": 
+                        return echo ( prettify(state.network, ['location', 'type', 'ping']), state )
+                        case "email": 
+                            return echo ( prettify(state.mailing, ['encryptor', 'server', 'clock']), state )
+                        default:
+                        case "os":
+                        case "":
+                            return echo ( prettify(state.system, ['OS', 'build', 'version']), state )
+                        }
+                }
+                case "config": {
+                    switch (args[1]) {
+                        case "email": 
+                            switch (args[2]) {
+                                case "clock": 
+                                    let newClock = state.mailing.clock === 'from server' ? 'from local' :  'from server' 
+                                    return echo ( "toggle clock ---> " + newClock, {...state, mailing: {...state.mailing, clock: newClock}  } )
+                                default:
+                                case "":
+                                    return echo ( "bad paramater or update not possible", state )
+                            }
+                        default:
+                            return echo ( "no possible updates", state )
+                    }
+                }
+                case "help":
+                default:
+                    return echo ( "manage system properties, usage: system [show|config] [os|network|email] [parameter]", state )
+                
+            }
         
         case "email": 
             return stackPush(state, "email")
@@ -52,11 +88,26 @@ let initialState = {
     prompt: "shell>",
     output: [],
     fnc: 'shell',
-    availableCommands: ['help', 'ls', 'cat', 'email'],
+    availableCommands: ['help', 'ls', 'cat', 'email', 'system'],
     fs: root,
     cwd: '/',
     emailState: emailState,
-    stack: []
+    stack: [],
+    system: {
+        os: "BluJay",
+        version: "451.7.16",
+        build: "HappNapp--11"
+    },
+    network: {
+        location: "150112031334",
+        type: "havocnet",
+        ping: "---"
+    },
+    mailing: {
+        encryptor: "v1.4",
+        server: "admantech vanilla 1",
+        clock: "from server"
+    }
 }
 
 export {initialState}
