@@ -142,6 +142,8 @@ let triggers = [
             })
             return [{...gameState, emailState: {...gameState.emailState, emails: encryptedOutgoing}}, levelProgress]
         }
+
+        return [gameState, levelProgress]
     },
 
     (gameState, levelProgress) => {
