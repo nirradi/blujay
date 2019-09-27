@@ -1,18 +1,15 @@
-import applications from './applications'
+import {getRunFunc, getInitFunc} from './applications'
 
-let startApp = (state, args) => {
-    if (state.onStartFnc)
-        return applications(state.onStartFnc)(state, args)
-    else
-        return state
+export const run = (cmd, args, state) => {
+    return getRunFunc(state.stack[0])(cmd, args, state)
 }
 
-export const pop = (state, currentApp, args) => {
-    let newState = {...state.stack[0], [currentApp+"State"]: state, stack: [...state.stack.slice(1)]}
-    return startApp(newState, args)
+export const pop = (state, args) => {
+    let newState = {...state, stack: [...state.stack.slice(1)]}
+    return getInitFunc(newState.stack[0])(newState, args)
 }
 
 export const push = (state, nextApp, args) => {
-    let newState = {...state[nextApp+"State"], stack: [state, ...state.stack] }
-    return startApp(newState, args)
+    let newState = {...state, stack: [nextApp, ...state.stack] }
+    return getInitFunc(newState.stack[0])(newState, args)
 }

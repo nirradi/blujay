@@ -1,12 +1,11 @@
 import echo, {prettify} from './echo'
 import prompt from './prompt'
 import {push as stackPush, pop as stackPop} from './stack'
-import {initialState as emailEditorState} from './emailEditor'
 import {now} from './shell'
 import moment from 'moment'
 
-const markAsRead = (state, label, emails) => {
-    let markedEmails = state.emails.map( (email) => {
+const markAsRead = (state, label) => {
+    let markedEmails = state.emailState.emails.map( (email) => {
         if (email.labels.includes(label) && email.labels.includes('unread'))
             return {
                 ...email, 
@@ -16,21 +15,29 @@ const markAsRead = (state, label, emails) => {
             return email
     })
 
-    return {...state, emails: markedEmails}
+    return {...state, emailState: {...state.emailState, emails: markedEmails} }
 }
 
 
-export default prompt((cmd, args, state) =>  {
+export const email = prompt((cmd, args, state) =>  {
+    let emailState = state.emailState
     switch (cmd) {
-        case 'help': return echo(["These are possible commands: ", ...state.availableCommands], state)
+        case 'help': 
+            switch (args[0]) {
+                case 'show':
+                    return echo("show [unread|inbox|sent|failed]", state)
+                default: 
+                    return echo(["These are possible commands: ", ...state.availableCommands], state)
+            }
+            
         case 'send': 
             return stackPush(state, "emailEditor")
         case 'show': 
             let label = args[0] || 'unread'
-            let emails = state.emails.filter( (email) => ( email.labels.includes(label) ) )
+            let emails = emailState.emails.filter( (email) => ( email.labels.includes(label) ) )
             let result = emails.map( (email) => ( prettify(email, ["To", "From", "Sent", "Subject", "Content"]) ) ).reduce( (res, email) => (res + email), "")
             
-            return echo (result, markAsRead(state, label, emails) )
+            return echo (result, markAsRead(state, label) )
         case 'quit': 
             return stackPop(state, "email")
         default: 
@@ -39,13 +46,7 @@ export default prompt((cmd, args, state) =>  {
 })
 
 let initialState = {
-    prompt: "email>",
-    output: [],
-    fnc: 'email',
-    availableCommands: ['help', 'show', 'send'],
     emails: [],
-    emailEditorState,
-    onStartFnc: 'onEmailStart',
     config: {
         encryptor: "v1.4",
         server: "admantech vanilla 1",
@@ -55,38 +56,43 @@ let initialState = {
 
 export {initialState}
 
-export const addEmail = (currentState, email) => {
+export const addEmail = (state, email) => {
+
     if (!email.sent) {
-        let sent = currentState.config.clock === "from server" ? moment().format() : now(currentState)
+        let sent = state.emailState.config.clock === "from server" ? moment().format() : now(state)
         email = {...email, sent}
     }
         
-    return {...currentState, emails: [...currentState.emails, email]}
+    return {...state, emailState: {...state.emailState, emails: [...state.emailState.emails, email]} } 
     
 }
 
 export const onEmailStart = (state, args) => {
+    let newState = {
+        ...state, 
+        prompt: "email>",
+        availableCommands: ['help', 'show', 'send'],
+    }
+
     if (!args) {
-        let unreadEmails = state.emails.filter((email) => (email.labels.includes('unread')) ).length
-        return echo(`There ${unreadEmails > 1 ? "are" : "is"} ${unreadEmails} unread ${unreadEmails > 1 ? "emails" : "email"}`, state)
+        let unreadEmails = newState.emailState.emails.filter((email) => (email.labels.includes('unread')) ).length
+        return echo(`There ${unreadEmails > 1 ? "are" : "is"} ${unreadEmails} unread ${unreadEmails > 1 ? "emails" : "email"}`, newState)
     }
 
     switch (args[0]) {
-        case 'send': return addEmail(state, args[1])
+        case 'send': return addEmail(newState, args[1])
         default:
-            return state
+            return newState
     }
     
 }
 
 export const sendEmails = (state, emailWhiteList) => {
-    if (!state.emails)
-        return state
 
     let updated = false
 
     emailWhiteList = emailWhiteList.map( (email) => (email.toLowerCase()))
-    let newEmails = state.emails.map( (email) => {
+    let newEmails = state.emailState.emails.map( (email) => {
         if (email.labels.includes('outbox')) {
             updated = true
             if (emailWhiteList.includes(email.to.toLowerCase())) {
@@ -107,5 +113,5 @@ export const sendEmails = (state, emailWhiteList) => {
         }
     })
 
-    return updated ? {...state, emails: newEmails} : state
+    return updated ? {...state, emailState: {...state.emailState, emails: newEmails} } : state
 }

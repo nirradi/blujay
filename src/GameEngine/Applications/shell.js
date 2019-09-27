@@ -2,7 +2,6 @@
 import echo, {prettify} from './echo'
 import prompt from './prompt'
 import {createRoot, getContent, normalize} from './fs'
-import {initialState as emailState} from './email'
 import {push as stackPush} from './stack'
 import moment from 'moment'
 
@@ -16,26 +15,31 @@ Object.filter = (obj, predicate) =>
 
 let startTime = moment()
 
-export default prompt((cmd, args, state) =>  {
+let updateShellState = (state, obj) => {
+    return {...state, shellState: { ...state.shellState, ...obj} }
+}
+
+export const shell = prompt((cmd, args, state) =>  {
+    let shellState = state.shellState
     switch (cmd) {
         case 'help': return echo(["These are possible commands: ", ...state.availableCommands], state)
         case 'ls': 
-            let files = Object.filter(state.fs, (file) => (file.path === state.cwd))
+            let files = Object.filter(shellState.fs, (file) => (file.path === shellState.cwd))
             let names = Object.keys(files).map( (key, index) => (files[key].name))
             return echo(names, state)
         case 'cd': 
-            let dirName = normalize(state.cwd, args[0])
+            let dirName = normalize(shellState.cwd, args[0])
             if (dirName[dirName.length -1] === "/")
                 dirName = dirName.slice(0, -1)
 
-            if (state.fs[dirName])
-                return {...state, cwd: dirName + "/"}
+            if (shellState.fs[dirName])
+                return updateShellState(state, {cwd: dirName + "/"})
             else
                 return echo ("bad directory", state)
 
         case 'cat': 
-            let fileName = normalize(state.cwd, args[0])
-            let content = getContent(state.fs, fileName)
+            let fileName = normalize(shellState.cwd, args[0])
+            let content = getContent(shellState.fs, fileName)
             if (content === null)
                 return echo("bad file", state)
             else
@@ -49,14 +53,14 @@ export default prompt((cmd, args, state) =>  {
                 case "show": {
                     switch (args[1]) {
                         case "network": 
-                        return echo ( prettify(state.network, ['location', 'type', 'ping']), state )
+                        return echo ( prettify(shellState.network, ['location', 'type', 'ping']), state )
                         case "email": 
                             return echo ( prettify(state.emailState.config, ['encryptor', 'server', 'clock']), state )
                         default:
                         case "os":
                         case "":
                             return echo ( 
-                                prettify(state.system, ['OS', 'build', 'version']), state )
+                                prettify(shellState.system, ['OS', 'build', 'version']), state )
                         }
                 }
                 case "config": {
@@ -85,7 +89,7 @@ export default prompt((cmd, args, state) =>  {
         case "time": 
             
             if (typeof args[0] !== 'undefined' && args[0] !== "") 
-                return {...state, system: {...state.system, time: moment(args.join(" "), moment.defaultFormat)}}
+                return updateShellState(state, { system: {...shellState.system, time: moment(args.join(" "), moment.defaultFormat)}} )
             else
                 return echo (now(state), state)
             
@@ -98,14 +102,8 @@ export default prompt((cmd, args, state) =>  {
 let root = createRoot()
 
 let initialState = {
-    prompt: "shell>",
-    output: [],
-    fnc: 'shell',
-    availableCommands: ['help', 'ls', 'cat', 'email', 'system'],
     fs: root,
     cwd: '/',
-    emailState: emailState,
-    stack: [],
     system: {
         os: "BluJay",
         version: "451.7.16",
@@ -122,6 +120,14 @@ let initialState = {
 export {initialState}
 
 export const now = (state) => {
-    let system = state.stack && state.stack.length > 0 ? state.stack[0].system : state.system
+    let system = state.shellState.system
     return (system.time.add((moment().subtract(startTime)))).format();
+}
+
+export const onShellStart = (state, args) => {
+    return {
+        ...state, 
+        prompt: "shell>",
+        availableCommands: ['help', 'ls', 'cat', 'email', 'system'],
+    }
 }

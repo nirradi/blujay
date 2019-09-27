@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Terminal from './GameEngine/Framework/Terminal'
-import applications from './GameEngine/Applications/applications'
+import {run} from './GameEngine/Applications/stack'
 import {levelFnc, initialLevelState} from './Levels'
 import './Style/main.scss'
 class App extends Component {
@@ -18,7 +18,7 @@ class App extends Component {
     }
 
     onEnter(cmd, args) {
-        let newAppState = applications(this.state.currentApp.fnc)(cmd, args, this.state.currentApp)
+        let newAppState = run(cmd, args, this.state.currentApp)
         const [finalAppState, levelProgress] = levelFnc(this.state.currentLevel)(newAppState, this.state.currentLevelProgress)
         this.setState({
             currentApp: finalAppState,

@@ -1,18 +1,34 @@
 import {addItem} from '../GameEngine/Applications/fs'
-import {initialState} from '../GameEngine/Applications/shell'
+import {initialState as shellState} from '../GameEngine/Applications/shell'
+import {initialState as emailState} from '../GameEngine/Applications/email'
 import {addEmail, sendEmails} from '../GameEngine/Applications/email'
+import {push as pushToStack} from '../GameEngine/Applications/stack'
 import moment from 'moment'
 
-let root = initialState.fs
+let state = {
+    shellState,
+    emailState, 
+    output: [],
+    stack: [],
+}
+
+let root = state.fs
 root = addItem(root, '/README', 'file', 'this is the first file')
 root = addItem(root, '/subdir', 'directory')
 root = addItem(root, '/subdir/README', 'file', 'this is the second file')
 
-let emailState = initialState.emailState
+state = { 
+    ...state, 
+    shellState: {
+        ...state.shellState,
+        fs: root
+    }
+}
+
 const ITfriend = 'Lisa Vanderblit'
 let contacts = [ITfriend]
 
-emailState = addEmail(emailState, {
+state = addEmail(state, {
     from: ITfriend,
     to: 'me',
     subject: 'hey where are you?',
@@ -21,12 +37,9 @@ emailState = addEmail(emailState, {
     sent: moment().startOf('day').format()
 })  
 
-
 const outboxContainsEmailTo = (state, to) => {
-    if (!state.emails)
-        return false
-
-    let foundEmails = state.emails.filter( (email) => {
+    
+    let foundEmails = state.emailState.emails.filter( (email) => {
         return (email.labels.includes('outbox') && email.to.toLowerCase() === to.toLowerCase())
     })
 
@@ -37,7 +50,7 @@ const outboxContainsEmailTo = (state, to) => {
 let triggers = [
 
     (gameState, levelProgress) => {
-        if (!levelProgress.sentFirstEmail && gameState.fnc === 'email') {
+        if (!levelProgress.sentFirstEmail) {
 
             if (outboxContainsEmailTo(gameState, ITfriend)) {
                 gameState = addEmail({...gameState}, {
@@ -60,7 +73,7 @@ let triggers = [
     },
 
     (gameState, levelProgress) => {
-        if (levelProgress.sentFirstEmail && !levelProgress.sendSecondEmail && gameState.fnc === 'email') {
+        if (levelProgress.sentFirstEmail && !levelProgress.sendSecondEmail) {
 
             if (outboxContainsEmailTo(gameState, ITfriend)) {
                 gameState = addEmail({...gameState}, {
@@ -83,9 +96,9 @@ let triggers = [
     },
 
     (gameState, levelProgress) => {
-        if (!levelProgress.emailUnencrypted && levelProgress.sentFirstEmail && gameState.fnc === 'email') {
+        if (!levelProgress.emailUnencrypted && levelProgress.sentFirstEmail) {
 
-            let foundEmails = gameState.emails.filter( (email) => {
+            let foundEmails = gameState.emailState.emails.filter( (email) => {
                 return (email.labels.includes('outbox') && email.to.toLowerCase() === ITfriend.toLowerCase() && email.sent === "1501 December 03, 13:34")
             })
 
@@ -119,6 +132,8 @@ let triggers = [
   
 ]
 
+state = pushToStack(state, 'shell')
+
 export default {
     fnc: (gameState, levelProgress) => {
         let newGameState = gameState
@@ -131,9 +146,5 @@ export default {
 
         return [newGameState, accumulatedProgress]
     },
-    initialState: {
-        ...initialState, 
-        emailState, 
-        fs: root
-    }
+    initialState: state
 }

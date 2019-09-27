@@ -1,18 +1,24 @@
 import prompt from './prompt'
 import {pop as stackPop} from './stack'
 
-export default prompt((cmd, args, state) =>  {
+
+let updateEditorState = (state, currentVal, nextPrompt) => {
+    let currentState = (!state.emailState.emailEditorState) ? {} : state.emailState.emailEditorState
+    return {...state, prompt: nextPrompt, emailState: {...state.emailState, emailEditorState: { ...currentState, [state.prompt]: currentVal} } }
+}
+
+export const emailEditor = prompt((cmd, args, state) =>  {
     switch (cmd) {
         default: 
             let val = [cmd, ...args].join(' ')
             switch (state.prompt) {
-                case "to": return {...state,  to: val, prompt: "subject"}
-                case "subject": return {...state, subject: val, prompt: "content"}
+                case "to": return updateEditorState(state, val, "subject")
+                case "subject": return updateEditorState(state, val, "content")
                 case "content": 
-                    return stackPop(state, "emailEditor", ['send', {
+                    return stackPop(state, ['send', {
                         from: 'me',
-                        to: state.to,
-                        subject: state.subject,
+                        to: state.emailState.emailEditorState.to,
+                        subject: state.emailState.emailEditorState.subject,
                         content: val,
                         labels: ['outbox']
                     }])
@@ -22,16 +28,11 @@ export default prompt((cmd, args, state) =>  {
     }
 })
 
-let initialState = {
-    output: [],
-    fnc: 'emailEditor',
-    availableCommands: [],
-    onStartFnc: 'onEmailEditorStart'
-}
-
-export {initialState}
-
-export const onEmailEditorStart = (state, args) => ({...state, prompt: "to", output: []})
+export const onEmailEditorStart = (state, args) => ({
+    ...state, 
+    prompt: "to", 
+    availableCommands: []
+    })
 
 
 

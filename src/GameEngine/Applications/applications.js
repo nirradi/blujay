@@ -1,16 +1,19 @@
-import shell from './shell'
-import email from './email'
-import {onEmailStart} from './email'
-import emailEditor from './emailEditor'
-import {onEmailEditorStart} from './emailEditor'
+import {shell, onShellStart} from './shell'
+import {email, onEmailStart} from './email'
+import {emailEditor, onEmailEditorStart} from './emailEditor'
 
-let funcs = {
+let runs = {
     shell, 
     email,
     emailEditor,
-    onEmailStart,
-    onEmailEditorStart
 }
 
-export default (funcName) => (funcs[funcName]) 
+let inits = {
+    shell: onShellStart,
+    email: onEmailStart,
+    emailEditor: onEmailEditorStart
+}
+
+export const getRunFunc = (funcName) => (runs[funcName]) 
+export const getInitFunc = (funcName) => (inits[funcName]) 
 
