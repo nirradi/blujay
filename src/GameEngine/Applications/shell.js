@@ -44,8 +44,8 @@ export default prompt((cmd, args, state) =>  {
             return state
 
         case "system": 
-            let cmd = args[0] || 'show'
-            switch (cmd) {
+            let subcmd = args[0]
+            switch (subcmd) {
                 case "show": {
                     switch (args[1]) {
                         case "network": 
@@ -55,7 +55,8 @@ export default prompt((cmd, args, state) =>  {
                         default:
                         case "os":
                         case "":
-                            return echo ( prettify(state.system, ['OS', 'build', 'version']), state )
+                            return echo ( 
+                                prettify(state.system, ['OS', 'build', 'version']), state )
                         }
                 }
                 case "config": {
@@ -73,7 +74,6 @@ export default prompt((cmd, args, state) =>  {
                             return echo ( "no possible updates", state )
                     }
                 }
-                case "help":
                 default:
                     return echo ( "manage system properties, usage: system [show|config] [os|network|email] [parameter]", state )
                 
@@ -90,7 +90,7 @@ export default prompt((cmd, args, state) =>  {
                 return echo (now(state), state)
             
 
-        default: return echo("bad command", state)
+        default: return echo("bad command: " + cmd , state)
     }
 })
 
