@@ -127,6 +127,24 @@ let triggers = [
     },
 
     (gameState, levelProgress) => {
+        if (!levelProgress.emailUnencrypted) {
+            let encryptedOutgoing = gameState.emailState.emails.map( (email) => {
+                if (email.labels.includes('outbox')) {
+                    return {
+                        ...email,
+                        subject: "***********************",
+                        content: "***********************"
+                    }
+                }
+                else {
+                    return email
+                }
+            })
+            return [{...gameState, emailState: {...gameState.emailState, emails: encryptedOutgoing}}, levelProgress]
+        }
+    },
+
+    (gameState, levelProgress) => {
         return [sendEmails(gameState, (contacts)), levelProgress]
     }
   
