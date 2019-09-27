@@ -22,7 +22,19 @@ let updateShellState = (state, obj) => {
 export const shell = prompt((cmd, args, state) =>  {
     let shellState = state.shellState
     switch (cmd) {
-        case 'help': return echo(["These are possible commands: ", ...state.availableCommands], state)
+        case 'help': 
+            switch (args[0]) {
+                case "system":
+                    return echo ( "manage system properties, usage: system [show|config] [os|network|email] [parameter]", state )
+                case "time": 
+                    return echo("time [Year Month Day, hours:minutes]", state)
+                default: 
+                    return echo(["Type `help [command]` for more information\n" 
+                                 + "These are possible commands: ", 
+                                 ...state.availableCommands], 
+                                state)
+            }
+            
         case 'ls': 
             let files = Object.filter(shellState.fs, (file) => (file.path === shellState.cwd))
             let names = Object.keys(files).map( (key, index) => (files[key].name))
@@ -50,6 +62,7 @@ export const shell = prompt((cmd, args, state) =>  {
         case "system": 
             let subcmd = args[0]
             switch (subcmd) {
+                default:
                 case "show": {
                     switch (args[1]) {
                         case "network": 
@@ -78,8 +91,8 @@ export const shell = prompt((cmd, args, state) =>  {
                             return echo ( "no possible updates", state )
                     }
                 }
-                default:
-                    return echo ( "manage system properties, usage: system [show|config] [os|network|email] [parameter]", state )
+                
+                    
                 
             }
         
