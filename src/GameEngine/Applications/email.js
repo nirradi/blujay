@@ -71,7 +71,7 @@ export const onEmailStart = (state, args) => {
     let newState = {
         ...state, 
         prompt: "email>",
-        availableCommands: ['help', 'show', 'send'],
+        availableCommands: ['help', 'show', 'send', 'quit'],
     }
 
     if (!args) {

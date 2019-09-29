@@ -5,10 +5,23 @@ import {addEmail, sendEmails} from '../GameEngine/Applications/email'
 import {push as pushToStack} from '../GameEngine/Applications/stack'
 import moment from 'moment'
 
+
+let welcomeMessage = [
+    "BluJay OS started",
+    "-----------------",
+    "drivers: .....ok",
+    "hardware: ......ok",
+    "network: ......ok",
+    "WARNING: email server is not up-to-date! Please contact your system administrator",
+    "All systems nominal",
+    "-----------------",
+    "type `help` for possible commands",
+]
+
 let state = {
     shellState,
     emailState, 
-    output: [],
+    output: welcomeMessage,
     stack: [],
 }
 
@@ -32,7 +45,7 @@ state = addEmail(state, {
     from: ITfriend,
     to: 'me',
     subject: 'hey where are you?',
-    content: "You haven't been around the office, send me an email when you see this",
+    content: "You haven't been around the office, send me an email when you see this, I need your help with something really important",
     labels: ['unread', 'inbox'],
     sent: moment().startOf('day').format()
 })  
@@ -57,7 +70,7 @@ let triggers = [
                     from: ITfriend,
                     to: 'me',
                     subject: 'so you went home.....',
-                    content: "I'm glad to see you back reading emails. I can't really read what you wrote its all garbage, you haven't updated your email server yet, so your encryption engine is out dated. send me your NetLoc number and I'll fix it from here",
+                    content: "I'm glad to see that you're back reading emails. I can't really read what you wrote, it looks like random bits on this end. I'm assuming you haven't updated your email server yet, so your encryption engine is out dated. send me your NetLoc number and I'll fix it from here",
                     labels: ['unread', 'inbox'],
                     sent: moment().format()
                 })
@@ -80,7 +93,7 @@ let triggers = [
                     from: ITfriend,
                     to: 'me',
                     subject: 'nice try',
-                    content: "if you tried to send me the netloc #, then obviously you can't because the mail is still encrypted, so is the subject for that fact. That's going to be a problem!? I'll try to find your netloc# here somewhere while you try to figure out a way around the encryption.",
+                    content: "if you tried to send me the netloc #, then obviously you can't because the mail is still encrypted, so is the subject. That's going to be a problem :( I'll try to find your netloc# here somewhere while you try to figure out a way around the encryption.",
                     labels: ['unread', 'inbox'],
                     sent: moment().format()
                 })

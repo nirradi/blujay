@@ -141,6 +141,6 @@ export const onShellStart = (state, args) => {
     return {
         ...state, 
         prompt: "shell>",
-        availableCommands: ['help', 'ls', 'cat', 'email', 'system'],
+        availableCommands: ['help', 'ls', 'cat', 'email', 'system', 'time'],
     }
 }
