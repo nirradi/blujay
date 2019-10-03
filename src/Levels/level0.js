@@ -127,7 +127,7 @@ let triggers = [
 
                 levelProgress = {
                     ...levelProgress,
-                    emailUnencrypted: true,
+                    emailUnencrypted: false,
                 }
 
                 alert("game over")
