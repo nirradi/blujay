@@ -6,9 +6,9 @@ node_js:
 jobs:
   include:
     - stage: test
-      script: yarn install
-      script: yarn test
-      script: yarn build
+    - script: yarn install
+    - script: yarn test
+    - script: yarn build
     - stage: deploy
       provider: s3
       access_key_id: $AWS_ACCESS_KEY
