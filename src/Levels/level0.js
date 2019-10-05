@@ -3,6 +3,7 @@ import {initialState as shellState} from '../GameEngine/Applications/shell'
 import {initialState as emailState} from '../GameEngine/Applications/email'
 import {addEmail, sendEmails} from '../GameEngine/Applications/email'
 import {push as pushToStack} from '../GameEngine/Applications/stack'
+import {initialLevelState, levelUp} from './index'
 import moment from 'moment'
 
 
@@ -120,7 +121,7 @@ let triggers = [
                     from: ITfriend,
                     to: 'me',
                     subject: 'WOW I see what you did there!',
-                    content: "How did you think of that!? anyway, I got your email updated - and now we should be able to talk about... you won't believe what Richards (aka toilet-breaks) got away with today!",
+                    content: "I got your netloc number! How did you think of that!? \nlisten, I need your help with something ummm sensitive. Its about that jerk from accounting, Rich. I think he stole money from the company and I can prove it. I'll send you an email in a few seconds with more details after I update your email client",
                     labels: ['unread', 'inbox'],
                     sent: moment().format()
                 })
@@ -128,12 +129,11 @@ let triggers = [
                 levelProgress = {
                     ...levelProgress,
                     emailUnencrypted: true,
+                    currentLevel: 'level1'
                 }
 
-                alert("game over")
+                return levelUp(gameState, 'level1')
             }
-
-            
         }
                 
         return [gameState, levelProgress]
@@ -168,16 +168,6 @@ let triggers = [
 state = pushToStack(state, 'shell')
 
 export default {
-    fnc: (gameState, levelProgress) => {
-        let newGameState = gameState
-        let accumulatedProgress = levelProgress
-        triggers.forEach( (trigger) => {
-            let newLevelProgress
-            [newGameState, newLevelProgress] = trigger(newGameState, levelProgress)
-            accumulatedProgress = {...newLevelProgress, ...accumulatedProgress}
-        })
-
-        return [newGameState, accumulatedProgress]
-    },
+    triggers: triggers,
     initialState: state
 }

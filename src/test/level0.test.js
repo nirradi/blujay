@@ -35,7 +35,6 @@ describe ( 'level0', () => {
             'abc',
             '123'
         ])
-        console.log(wrapper.state().currentLevelProgress)
         expect(wrapper.state().currentLevelProgress["sendSecondEmail"]).toBe(true)
     
     });
@@ -52,8 +51,7 @@ describe ( 'level0', () => {
             'abc',
             '123'
         ])
-        console.log(wrapper.state().currentLevelProgress)
-        expect(wrapper.state().currentLevelProgress["emailUnencrypted"]).toBe(true)
+        expect(wrapper.state().currentLevelProgress["currentLevel"]).toBe('level1')
     
     });
 

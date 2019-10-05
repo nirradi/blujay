@@ -13,7 +13,7 @@ Object.filter = (obj, predicate) =>
           .reduce( (res, key) => ((res[key] = obj[key], res)), {} );
 
 
-let startTime = moment()
+let startTime = moment().format()
 
 let updateShellState = (state, obj) => {
     return {...state, shellState: { ...state.shellState, ...obj} }
@@ -134,7 +134,7 @@ export {initialState}
 
 export const now = (state) => {
     let system = state.shellState.system
-    return (system.time.add((moment().subtract(startTime)))).format();
+    return (system.time.add((moment().subtract(startTime).format()))).format();
 }
 
 export const onShellStart = (state, args) => {

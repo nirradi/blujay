@@ -10,8 +10,9 @@ class App extends Component {
 
         this.state = {
             currentApp: initialLevelState('level0'),
-            currentLevel: 'level0',
-            currentLevelProgress: {}
+            currentLevelProgress: {
+                currentLevel: 'level0'
+            }
         }
       
         this.onEnter = this.onEnter.bind(this)
@@ -19,7 +20,7 @@ class App extends Component {
 
     onEnter(cmd, args) {
         let newAppState = run(cmd, args, this.state.currentApp)
-        const [finalAppState, levelProgress] = levelFnc(this.state.currentLevel)(newAppState, this.state.currentLevelProgress)
+        const [finalAppState, levelProgress] = levelFnc(this.state.currentLevelProgress.currentLevel)(newAppState, this.state.currentLevelProgress)
         this.setState({
             currentApp: finalAppState,
             currentLevelProgress: levelProgress

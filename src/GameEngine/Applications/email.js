@@ -25,7 +25,9 @@ export const email = prompt((cmd, args, state) =>  {
         case 'help': 
             switch (args[0]) {
                 case 'show':
-                    return echo("show [unread|inbox|sent|failed]", state)
+                    return echo("show [unread|inbox|sent|failed|archived]", state)
+                case 'contacts':
+                    return echo ("contacts [contact name]", state)
                 default: 
                     return echo(["These are possible commands: ", ...state.availableCommands], state)
             }
@@ -38,6 +40,13 @@ export const email = prompt((cmd, args, state) =>  {
             let result = emails.map( (email) => ( prettify(email, ["To", "From", "Sent", "Subject", "Content"]) ) ).reduce( (res, email) => (res + email), "")
             
             return echo (result, markAsRead(state, label) )
+        case 'contacts':
+            if (emailState.contacts) {
+                return echo(emailState.contacts.map( (contact) => (contact.name)), state)
+            }
+            else {
+                return echo ("the contact list is unavailable right now, contact your administrator if the problem persists.", state)
+            }
         case 'quit': 
             return stackPop(state, "email")
         default: 
@@ -71,7 +80,7 @@ export const onEmailStart = (state, args) => {
     let newState = {
         ...state, 
         prompt: "email>",
-        availableCommands: ['help', 'show', 'send', 'quit'],
+        availableCommands: ['help', 'show', 'send', 'quit', 'contacts'],
     }
 
     if (!args) {
