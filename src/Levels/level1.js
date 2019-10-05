@@ -1,12 +1,18 @@
 export default {
-    fnc: (gameState, levelProgress) => {
-        return [gameState, levelProgress]
-    },
+    triggers: [
+
+    ],
     initialState: {
+        shellState: {
+            availableApps: ['datarecover', 'email']
+        },
         emailState: {
             contacts: [
                 {
                     name: 'Lisa Vanderblit'
+                },
+                {
+                    name: 'Richard Payton'
                 }
             ]
         }

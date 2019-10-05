@@ -96,9 +96,6 @@ export const shell = prompt((cmd, args, state) =>  {
                 
             }
         
-        case "email": 
-            return stackPush(state, "email")
-
         case "time": 
             
             if (typeof args[0] !== 'undefined' && args[0] !== "") 
@@ -107,7 +104,12 @@ export const shell = prompt((cmd, args, state) =>  {
                 return echo (now(state), state)
             
 
-        default: return echo("bad command: " + cmd , state)
+        default: 
+            if (shellState.availableApps.includes(cmd)) {
+                return stackPush(state, cmd)
+            }
+            else
+                return echo("bad command: " + cmd , state)
     }
 })
 
@@ -141,6 +143,6 @@ export const onShellStart = (state, args) => {
     return {
         ...state, 
         prompt: "shell>",
-        availableCommands: ['help', 'ls', 'cat', 'email', 'system', 'time'],
+        availableCommands: ['help', 'ls', 'cat', 'system', 'time', ...state.shellState.availableApps],
     }
 }

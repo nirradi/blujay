@@ -3,7 +3,7 @@ import {initialState as shellState} from '../GameEngine/Applications/shell'
 import {initialState as emailState} from '../GameEngine/Applications/email'
 import {addEmail, sendEmails} from '../GameEngine/Applications/email'
 import {push as pushToStack} from '../GameEngine/Applications/stack'
-import {initialLevelState, levelUp} from './index'
+import {levelUp} from './index'
 import moment from 'moment'
 
 
@@ -20,7 +20,10 @@ let welcomeMessage = [
 ]
 
 let state = {
-    shellState,
+    shellState: { 
+        ...shellState,
+        availableApps: ['email']
+    },
     emailState, 
     output: welcomeMessage,
     stack: [],
