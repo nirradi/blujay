@@ -1,0 +1,10 @@
+level 0:
+need to find a way around outgoing encrypted email subjects and content and send the network location number to Lisa.
+netloc number is in configuration. need to transmit number in date field by changing the time of the machine and making email sending read 
+local time instead of server time.
+
+level 1: 
+need to find Rick's password and send to Lisa, under the assumption that the password is the same for Rick's workstation access. 
+Need to recover files since this used to be Rick's station. File recovery is partial and corrupt, no files are visible for recovery.
+Running defrag tool creates a list, partial with letters missing from folder names. Another clue is in richard's bio, he likes playing an online game 
+recovering the game reveals that you can recover the password .... by? 

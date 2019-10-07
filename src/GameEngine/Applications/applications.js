@@ -1,20 +1,20 @@
 import {shell, onShellStart} from './shell'
 import {email, onEmailStart} from './email'
 import {emailEditor, onEmailEditorStart} from './emailEditor'
-import {dataRecover, onDataRecoverStart} from './datarecover'
+import {diskTools, onDiskToolsStart} from './disktools'
 
 let runs = {
     shell, 
     email,
     emailEditor,
-    datarecover: dataRecover
+    disktools: diskTools
 }
 
 let inits = {
     shell: onShellStart,
     email: onEmailStart,
     emailEditor: onEmailEditorStart,
-    datarecover: onDataRecoverStart
+    disktools: onDiskToolsStart
 }
 
 export const getRunFunc = (funcName) => (runs[funcName]) 

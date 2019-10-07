@@ -73,7 +73,7 @@ export const shell = prompt((cmd, args, state) =>  {
                         case "os":
                         case "":
                             return echo ( 
-                                prettify(shellState.system, ['OS', 'build', 'version']), state )
+                                prettify(shellState.system, ['OS', 'build', 'version', 'Head Size', 'Disk Count']), state )
                         }
                 }
                 case "config": {
@@ -123,6 +123,8 @@ let initialState = {
         os: "BluJay",
         version: "451.7.16",
         build: "HappNapp--11",
+        headsize: 13,
+        diskcount: 2,
         time: startTime
     },
     network: {

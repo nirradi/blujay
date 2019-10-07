@@ -4,7 +4,7 @@ export default {
     ],
     initialState: {
         shellState: {
-            availableApps: ['datarecover', 'email']
+            availableApps: ['disktools', 'email']
         },
         emailState: {
             contacts: [

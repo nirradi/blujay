@@ -8,7 +8,7 @@ export default (text, state) => {
 export const prettify = (obj, fields) => {
     let result = ""
     fields.forEach( (field) => {
-        result += `${field}: ${obj[field.toLowerCase()]}\n`
+        result += `${field}: ${obj[field.toLowerCase().replace(/\s/g,'')]}\n`
     })
 
     return result
