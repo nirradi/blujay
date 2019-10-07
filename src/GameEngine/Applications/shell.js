@@ -123,8 +123,8 @@ let initialState = {
         os: "BluJay",
         version: "451.7.16",
         build: "HappNapp--11",
-        headsize: 13,
-        diskcount: 2,
+        headsize: "13",
+        diskcount: "2",
         time: startTime
     },
     network: {
