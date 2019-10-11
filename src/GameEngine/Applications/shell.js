@@ -21,6 +21,7 @@ let updateShellState = (state, obj) => {
 
 export const shell = prompt((cmd, args, state) =>  {
     let shellState = state.shellState
+    cmd = cmd.toLowerCase()
     switch (cmd) {
         case 'help': 
             switch (args[0]) {
@@ -97,7 +98,6 @@ export const shell = prompt((cmd, args, state) =>  {
             }
         
         case "time": 
-            
             if (typeof args[0] !== 'undefined' && args[0] !== "") 
                 return updateShellState(state, { system: {...shellState.system, time: moment(args.join(" "), moment.defaultFormat)}} )
             else
@@ -138,7 +138,7 @@ export {initialState}
 
 export const now = (state) => {
     let system = state.shellState.system
-    return (system.time.add((moment().subtract(startTime).format()))).format();
+    return (moment(system.time, moment.defaultFormat).add(moment().subtract(startTime).format())).format();
 }
 
 export const onShellStart = (state, args) => {

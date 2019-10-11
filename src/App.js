@@ -28,8 +28,7 @@ class App extends Component {
     }
 
     onEnter(cmd, args) {
-        cmd = cmd.toLowerCase()
-        args = args.map( (arg) => (arg.toLowerCase()))
+
         let newAppState = run(cmd, args, this.state.currentApp)
         var [finalAppState, levelProgress] = levelFnc(this.state.currentLevelProgress.currentLevel)(newAppState, this.state.currentLevelProgress)
 

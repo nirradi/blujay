@@ -8,7 +8,7 @@ import {levelUp} from './index'
 import {defer} from '../GameEngine/Framework/defer'
 import echo from '../GameEngine/Applications/echo'
 import moment from 'moment'
-
+import {Blink} from '../GameEngine/Framework/TerminalOutput'
 
 let welcomeMessage = [
     "BluJay OS started",
@@ -16,7 +16,9 @@ let welcomeMessage = [
     "drivers: .....ok",
     "hardware: ......ok",
     "network: ......ok",
-    <p className='blinking'>WARNING: email server is not up-to-date! Please contact your system administrator</p>,
+    <br/>,
+    <Blink>WARNING: email server is not up-to-date! Please contact your system administrator</Blink>,
+    <br/>,
     "All systems nominal",
     "-----------------",
     "type `help` for possible commands",

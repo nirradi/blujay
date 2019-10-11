@@ -22,3 +22,9 @@ TerminalOutput.defaultProps = {
     
 
 export default TerminalOutput;
+
+export class Blink extends React.Component {
+    render() {
+        return <p className='blinking'>{this.props.children}</p>;
+    }
+}

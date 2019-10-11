@@ -26,10 +26,11 @@
 
 .blinking {
     animation: blinker 1s linear infinite;
-  }
+    margin: 0
+}
   
-  @keyframes blinker {
+@keyframes blinker {
     50% {
-      opacity: 0.5;
+        opacity: 0.5;
     }
-  }
+}
