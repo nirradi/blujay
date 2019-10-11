@@ -1,9 +1,12 @@
+import React from 'react'
 import {addItem} from '../GameEngine/Applications/fs'
 import {initialState as shellState} from '../GameEngine/Applications/shell'
 import {initialState as emailState} from '../GameEngine/Applications/email'
 import {addEmail, sendEmails} from '../GameEngine/Applications/email'
 import {push as pushToStack} from '../GameEngine/Applications/stack'
 import {levelUp} from './index'
+import {defer} from '../GameEngine/Framework/defer'
+import echo from '../GameEngine/Applications/echo'
 import moment from 'moment'
 
 
@@ -13,7 +16,7 @@ let welcomeMessage = [
     "drivers: .....ok",
     "hardware: ......ok",
     "network: ......ok",
-    "WARNING: email server is not up-to-date! Please contact your system administrator",
+    <p className='blinking'>WARNING: email server is not up-to-date! Please contact your system administrator</p>,
     "All systems nominal",
     "-----------------",
     "type `help` for possible commands",
@@ -27,6 +30,7 @@ let state = {
     emailState, 
     output: welcomeMessage,
     stack: [],
+    defferedActions: []
 }
 
 let root = state.fs
@@ -70,14 +74,22 @@ let triggers = [
         if (!levelProgress.sentFirstEmail) {
 
             if (outboxContainsEmailTo(gameState, ITfriend)) {
-                gameState = addEmail({...gameState}, {
-                    from: ITfriend,
-                    to: 'me',
-                    subject: 'so you went home.....',
-                    content: "I'm glad to see that you're back reading emails. I can't really read what you wrote, it looks like random bits on this end. I'm assuming you haven't updated your email server yet, so your encryption engine is out dated. send me your NetLoc number and I'll fix it from here",
-                    labels: ['unread', 'inbox'],
-                    sent: moment().format()
-                })
+
+                gameState = defer(gameState, (state) => {
+                    state = addEmail({...state}, {
+                        from: ITfriend,
+                        to: 'me',
+                        subject: 'so you went home.....',
+                        content: "I'm glad to see that you're back reading emails. I can't really read what you wrote, it looks like random bits on this end. I'm assuming you haven't updated your email server yet, so your encryption engine is out dated. send me your NetLoc number and I'll fix it from here",
+                        labels: ['unread', 'inbox'],
+                        sent: moment().format()
+                    })
+
+                    state = echo("New Mail!", state)
+                    return state
+
+                }, 3)
+
 
                 levelProgress = {
                     ...levelProgress,
